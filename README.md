@@ -11,12 +11,12 @@ La idea de este repo es ir desarrollando la tematica de la asignatura y que este
 
 - **TALLERES**
 
-**Taller 1**  Se desarrollo el el primer taller de la asignatura con el objetivo de interiorizar los conceptos practicos sobre la construccion de cartas de control 
+     - **Taller 1**  Se desarrollo el el primer taller de la asignatura con el objetivo de interiorizar los conceptos practicos sobre la construccion de cartas de control 
 
 - **ENTREGAS**
 
-**Entrega 1** Se desarrollo la entrega de ejercicios propuestos para el docente con el fin de explorar a groso modo la forma en la que funciona la simulacion de cartas de control para encontrar las caracteristicas más significativas de estas en terminos de ARL, Curvas OC y demás.
-      **Corrección Entrega 1** Teniendo en cuenta las correcciones del docente y desarrollo de los otros compañero de clase, se realizaron las correcciones de la ~Entrega 1~ esta vez teniendo más rigurosidad al momento de la presentacion de los resultados.
+     - **Entrega 1** Se desarrollo la entrega de ejercicios propuestos para el docente con el fin de explorar a groso modo la forma en la que funciona la simulacion de cartas de control para encontrar las caracteristicas más significativas de estas en terminos de ARL, Curvas OC y demás.
+     - **Corrección Entrega 1** Teniendo en cuenta las correcciones del docente y desarrollo de los otros compañero de clase, se realizaron las correcciones de la ~Entrega 1~ esta vez teniendo más rigurosidad al momento de la presentacion de los resultados.
 
 - **MATERIAL EXTRA**
 
