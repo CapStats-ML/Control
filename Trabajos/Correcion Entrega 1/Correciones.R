@@ -24,45 +24,38 @@ for (i in 1:5000){
 MRL <- mean(RL)
 MRL
 
+#Ahora hagamoslo par la carta S 
 
+mu <- 3        # Valor verdadero de la media
+s <- 1         # Valor verdadero de la desviación estándar
+n <- 6         # Tamaño de la muestra
+S_barra <- 3.14  # Valor verdadero de la desviación estándar
 
-# PUNTO 2 ----
+C4 <- sqrt(2 / (n - 1)) * (gamma(n/2) / gamma((n - 1) / 2))  # Factor C4 para n = 25
 
+B3 <- 1 - (3/(C4 * sqrt(2*(n-1))))  # Factor B3 para n = 6
+B4 <- 1 + (3/(C4 * sqrt(2*(n-1))))  # Factor B4 para n = 6
 
-# Definición de la función OC_S2
-OC_S2 <- function(n, sigma2_0, delta){
-  # Cálculo de los límites de control superior e inferior para la carta S^2
-  UCL <- sigma2_0/(n-1) * qchisq(1 - 0.05/2, df = n-1)
-  LCL <- sigma2_0/(n-1) * qchisq(0.05/2, df = n-1)
-  
-  # Cálculo del poder de detección (beta)
-  beta <- pchisq((n-1)*UCL/(sigma2_0 + delta), df = n-1) - pchisq((n-1)*LCL/(sigma2_0 + delta), df = n-1)
-  
-  return(beta)
+UCL <- B4 * S_barra
+LCL <- B3 * S_barra
+
+RL <- rep(0, 5000)  # Vector para almacenar los longitudes de corrida
+
+for (i in 1:5000) {
+  obs <- s
+  count <- 0
+  while (obs > LCL & obs < UCL) {
+    muestra <- rnorm(n = n, mean = mu + 1, sd = s)  # Desplazamiento de 1 en la media
+    obs <- sd(muestra)  # Desviación estándar observada
+    count <- count + 1
+  }
+  RL[i] <- count
 }
 
-# Parámetros
-sigma2_0 <- 1
-deltas <- seq(0.1, 8, by = 0.1) # Valores de delta
-n_values <- seq(3, 42, by = 3) # Tamaños de muestra de 3 en 3
+MRL <- mean(RL)  # Longitud promedio de la corrida
+MRL
 
-# Colores para las curvas (4 colores diferentes)
-colors <- c("orange", "red", "purple", "blue", "cyan")
 
-# Inicializar la gráfica
-plot(NULL, xlim = c(min(deltas), max(deltas)), ylim = c(0, 1),
-     xlab = "Corrimiento (Delta)", ylab = "Poder de Detección (Beta)",
-     main = "Curvas OC para la carta S^2")
-
-# Graficar las curvas en grupos de 4 colores
-for (i in seq_along(n_values)) {
-  n <- n_values[i]
-  beta_values <- sapply(deltas, function(delta) OC_S2(n, sigma2_0, delta))
-  
-  # Determinar el grupo de color
-  color_index <- (i - 1) %/% 3 + 1
-  lines(deltas, beta_values, type = "l", col = colors[color_index], lwd = 1.2)
-}
 
 
 # PUNTO 5 ----
@@ -71,197 +64,227 @@ for (i in seq_along(n_values)) {
 # Diseñar la carta con límites de control ubicados a tres desviaciones estándar de la media
 # y dividiendo la región de control estadístico en franjas de ancho igual a una desviación estándar.
 
-# Parámetros
-mu <- 3
-sigma <- 1
-n <- 3
+A = pnorm(1) - pnorm(-1)
+B = pnorm(2) - pnorm(1)
+C = pnorm(3) - pnorm(2)
+D = pnorm(-1) - pnorm(-2)
+E = pnorm(-2) - pnorm(-3)
+F = 1 - pnorm(3)
 
-# Límites de control
-UCL <- mu + 3 * sigma / sqrt(n)
-LCL <- mu - 3 * sigma / sqrt(n)
+A; B; C; D; E; F
 
-# Probabilidades de transición
-p <- 0.5
-q <- 1 - p
+P = matrix(ncol = 6, nrow = 6)
 
-# Matriz de transición
-P <- matrix(c(q, p, 0, 0, 0, 0,
-              q, 0, p, 0, 0, 0,
-              0, q, 0, p, 0, 0,
-              0, 0, q, 0, p, 0,
-              0, 0, 0, q, 0, p,
-              0, 0, 0, 0, q, 1),
-            nrow = 6, byrow = TRUE)
+P[1:5,1]= A
+P[1:5,2]= B
+P[1:5,3]= C
+P[1:5,4]= D
+P[1:5,5]= E
+P[1:5,6]= F
+P[1:6,6] = c(0,0,0,0,0,1)
+P[6,1:6] = c(0,0,0,0,0,1)
 
-# Vector de estado inicial
-pi0 <- c(1, 0, 0, 0, 0, 0)
+P[4,4] = P[4,6]; P[4,4] = 0
+P[5,5] = P[5,6]; P[5,5] = 0
 
-# Calcular la matriz de probabilidad de estado en el tiempo t
-t_max <- 1000
-pi_t <- matrix(0, nrow = 6, ncol = t_max)
+R = P[1:5,1:5]
+I = diag(5)
+p0 = c(1,0,0,0,0)
 
-for (t in 1:t_max) {
-  pi_t[, t] <- pi0 %*% (P^t)
+
+
+
+
+
+
+################################
+
+miu <- 0
+sd <- 1
+n <- 5
+
+UCL <- miu + 3*(sd/sqrt(n))
+LCL <- miu - 3*(sd/sqrt(n))
+
+M <- matrix(0, nrow = 5, ncol = 10)
+
+for(i in 1:10){
+  M[1:5,i] <- rnorm(n = n, mean = miu, sd = sd)
 }
 
-# Calcular el ARL
-# Encuentra el primer instante en el que la probabilidad de estar en el estado 1 (más bajo)
-# supera el límite superior o está por debajo del límite inferior.
-ARL <- which.max(pi_t[1, ] > UCL | pi_t[1, ] < LCL)
+Means <- apply(M, 2, mean)
 
-# Mostrar el ARL
-ARL
+which(Means > UCL | Means < LCL)
 
-# PUNTO 5 ----
+N <- matrix(0, nrow = 5, ncol = 100)
 
-# Calcular el ARL de la Carta $\bar{X}$ mediante cadenas de Markov.
-# Diseñar la carta con límites de control ubicados a tres desviaciones estándar de la media
-# y dividiendo la región de control estadístico en franjas de ancho igual a una desviación estándar.
-
-set.seed(123)  # Para reproducibilidad
-
-# Parámetros
-mu <- 0
-n <- 3
-sigma <- 1
-Sigmas <- rep(0, 3)
-
-for (i in 1:3){
-  Sigmas[i] <- i/sqrt(n)
+for(i in 1:100){
+  N[1:5,i] <- rnorm(n = n, mean = 1, sd = sd)
 }
 
-UCL <- mu + 3 * (sigma / sqrt(n))
-LCL <- mu - 3 * (sigma / sqrt(n))
+MeansN <- apply(N, 2, mean)
 
-matrix_prob <- matrix(0, nrow = 6, ncol = 6)
+which(MeansN > UCL | MeansN < LCL)
 
-# Probabilidades de transición
+N1 <- N[1:5, 1:12]
 
-for (i in 1:6) {
-  for (j in 1:6) {
-    if (i == j) {
-      matrix_prob[i, j] <- pnorm(Sigmas[j], mu, sigma) - pnorm(Sigmas[i - 1], mu, sigma)
-    } else if (i == j + 1 | i == j - 1) {
-      matrix_prob[i, j] <- pnorm(Sigmas[j], mu, sigma) - pnorm(Sigmas[j - 1], mu, sigma)
-    } else {
-      matrix_prob[i, j] <- 0
-    }
+M1 <- cbind(M, N1)
+
+T <- ncol(M1)
+r <- seq(1, T, by = 1)
+
+MM1 <- apply(M1, 2, mean)
+
+Tau <- rep(0, T)
+
+for(i in 1:T){
+  Tau[i] <- (T - i)*(mean(MM1[i:T]) - miu)^2
+}
+
+which(max(Tau) == Tau)
+
+######################
+
+# Definición de funciones
+
+# Función para calcular los límites de control de la carta X-barra
+calcular_limites_control <- function(miu, sd, n) {
+  UCL <- miu + 3 * (sd / sqrt(n))
+  LCL <- miu - 3 * (sd / sqrt(n))
+  return(list(UCL = UCL, LCL = LCL))
+}
+
+# Función para generar una matriz de datos simulados
+generar_matriz <- function(n_filas, n_columnas, miu, sd) {
+  matriz <- matrix(0, nrow = n_filas, ncol = n_columnas)
+  for (i in 1:n_columnas) {
+    matriz[, i] <- rnorm(n = n_filas, mean = miu, sd = sd)
   }
+  return(matriz)
 }
 
+# Función para calcular las medias de las columnas de una matriz
+calcular_medias <- function(matriz) {
+  medias <- apply(matriz, 2, mean)
+  return(medias)
+}
 
-# PUNTO 5 - Versión Six Sigma ----
-# Calcular el ARL de la Carta X-barra mediante cadenas de Markov.
-# Diseñar la carta con límites de control ubicados a tres desviaciones estándar de la media
-# y dividiendo la región de control estadístico en franjas de ancho igual a una desviación estándar.
+# Función para verificar si alguna media excede los límites de control
+verificar_salida_control <- function(medias, UCL, LCL) {
+  indices_fuera_de_control <- which(medias > UCL | medias < LCL)
+  return(indices_fuera_de_control)
+}
+
+# Función para calcular el estadístico Tau
+calcular_tau <- function(M1, miu) {
+  T <- ncol(M1)
+  MM1 <- calcular_medias(M1)
+  Tau <- rep(0, T)
+  for (i in 1:T) {
+    Tau[i] <- (T - i) * (mean(MM1[i:T]) - miu)^2
+  }
+  return(Tau)
+}
+
+# Parámetros de la carta
+miu <- 0
+sd <- 1
+n <- 5
+
+# Cálculo de los límites de control
+limites_control <- calcular_limites_control(miu, sd, n)
+UCL <- limites_control$UCL
+LCL <- limites_control$LCL
+
+# Generación de la matriz para la carta en control
+M <- generar_matriz(n_filas = 5, n_columnas = 10, miu = miu, sd = sd)
+
+# Cálculo de las medias de la matriz M
+Means <- calcular_medias(M)
+
+# Verificación de si alguna muestra está fuera de control en la carta M
+salidas_control_M <- verificar_salida_control(Means, UCL, LCL)
+
+# Generación de la matriz para la carta con media corrida
+N <- generar_matriz(n_filas = 5, n_columnas = 100, miu = 1, sd = sd)
+
+# Cálculo de las medias de la matriz N
+MeansN <- calcular_medias(N)
+
+# Verificación de si alguna muestra está fuera de control en la carta N
+salidas_control_N <- verificar_salida_control(MeansN, UCL, LCL)
+
+# Se seleccionan los datos hasta la primera salida de control (incluida)
+if (length(salidas_control_N) > 0) {
+  N1 <- N[, 1:salidas_control_N[1]]
+} else {
+  N1 <- N
+}
+
+# Combinar la matriz M con la matriz N1
+M1 <- cbind(M, N1)
+
+# Cálculo del estadístico Tau para la carta combinada M1
+Tau <- calcular_tau(M1, miu)
+
+# Identificación del valor máximo de Tau
+max_tau_index <- which.max(Tau)
+
+####
+
+
+# Función para generar la matriz N con un corrimiento específico de miu
+generar_matriz_corrimiento <- function(n_filas, n_columnas, miu, sd) {
+  matriz <- matrix(0, nrow = n_filas, ncol = n_columnas)
+  for (i in 1:n_columnas) {
+    matriz[, i] <- rnorm(n = n_filas, mean = miu, sd = sd)
+  }
+  return(matriz)
+}
 
 # Parámetros
-mu <- 0  # Media del proceso
-sigma <- 1  # Desviación estándar del proceso
-k <- 3  # Número de desviaciones estándar para los límites de control
+miu_base <- 0
+sd <- 1
+n <- 5
+n_columna <- 10
+corrimientos <- seq(0.1, 2, 0.1)
 
-# Función para calcular la probabilidad acumulada normal estándar
-pnorm_diff <- function(a, b) {
-  pnorm(b) - pnorm(a)
+# Generar matriz M
+M <- generar_matriz_corrimiento(n_filas = n, n_columnas = n_columna, miu = miu_base, sd = sd)
+
+# Calcular medias de la matriz M
+Means_M <- apply(M, 2, mean)
+
+# Limites de control
+limites_control <- calcular_limites_control(miu_base, sd, n)
+UCL <- limites_control$UCL
+LCL <- limites_control$LCL
+
+# Crear una lista para almacenar las medias con diferentes corrimientos
+medias_corrimiento <- matrix(0, ncol = length(corrimientos), nrow = n_columna)
+
+# Calcular medias para cada corrimiento
+for (j in 1:length(corrimientos)) {
+  miu_corrimiento <- corrimientos[j]
+  N_corrimiento <- generar_matriz_corrimiento(n_filas = n, n_columnas = 100, miu = miu_corrimiento, sd = sd)
+  Means_N_corrimiento <- apply(N_corrimiento, 2, mean)
+  medias_corrimiento[, j] <- Means_N_corrimiento[1:n_columna]
 }
 
-# Calcular probabilidades de transición
-p_3 <- pnorm_diff(2, 3)
-p_2 <- pnorm_diff(1, 2)
-p_1 <- pnorm_diff(0, 1)
-p_0 <- pnorm_diff(-1, 0)
-p_m1 <- pnorm_diff(-2, -1)
-p_m2 <- pnorm_diff(-3, -2)
-p_out <- 1 - pnorm_diff(-3, 3)
+# Crear el gráfico
+plot_data <- data.frame(
+  Valor = c(Means_M, as.vector(medias_corrimiento)),
+  Tiempo = rep(1:n_columna, times = length(corrimientos) + 1),
+  Tipo = rep(c("Observado", rep("Corrimiento", length(corrimientos))), each = n_columna),
+  Corrimiento = rep(c(miu_base, corrimientos), each = n_columna)
+)
 
-# Construir la matriz de transición
-P <- matrix(c(
-  p_m2, p_m1, p_0,  p_1,  p_2,  p_3,  p_out,
-  p_m2, p_m1, p_0,  p_1,  p_2,  p_3,  p_out,
-  p_m2, p_m1, p_0,  p_1,  p_2,  p_3,  p_out,
-  p_m2, p_m1, p_0,  p_1,  p_2,  p_3,  p_out,
-  p_m2, p_m1, p_0,  p_1,  p_2,  p_3,  p_out,
-  p_m2, p_m1, p_0,  p_1,  p_2,  p_3,  p_out,
-  0,    0,    0,    0,    0,    0,    1
-), nrow = 7, byrow = TRUE)
-
-# Extraer la submatriz R
-R <- P[1:6, 1:6]
-
-# Calcular el ARL
-ARL <- sum(solve(diag(6) - R) %*% rep(1, 6))
-
-# Imprimir el resultado
-cat("El ARL de la carta X-bar (Six Sigma) es:", round(ARL, 2))
-
-
-### 
-
-# Función para calcular el ARL usando cadenas de Markov
-calculate_ARL <- function(mu, sigma) {
-  k <- 3  # Número de desviaciones estándar para los límites de control
-  
-  # Función para calcular la probabilidad acumulada normal estándar
-  pnorm_diff <- function(a, b) {
-    pnorm((b - mu) / sigma) - pnorm((a - mu) / sigma)
-  }
-  
-  # Calcular probabilidades de transición
-  p_3 <- pnorm_diff(2*sigma, 3*sigma)
-  p_2 <- pnorm_diff(sigma, 2*sigma)
-  p_1 <- pnorm_diff(0, sigma)
-  p_0 <- pnorm_diff(-sigma, 0)
-  p_m1 <- pnorm_diff(-2*sigma, -sigma)
-  p_m2 <- pnorm_diff(-3*sigma, -2*sigma)
-  p_out <- 1 - pnorm_diff(-3*sigma, 3*sigma)
-  
-  # Construir la matriz de transición
-  P <- matrix(c(
-    p_m2, p_m1, p_0,  p_1,  p_2,  p_3,  p_out,
-    p_m2, p_m1, p_0,  p_1,  p_2,  p_3,  p_out,
-    p_m2, p_m1, p_0,  p_1,  p_2,  p_3,  p_out,
-    p_m2, p_m1, p_0,  p_1,  p_2,  p_3,  p_out,
-    p_m2, p_m1, p_0,  p_1,  p_2,  p_3,  p_out,
-    p_m2, p_m1, p_0,  p_1,  p_2,  p_3,  p_out,
-    0,    0,    0,    0,    0,    0,    1
-  ), nrow = 7, byrow = TRUE)
-  
-  # Extraer la submatriz R
-  R <- P[1:6, 1:6]
-  
-  # Calcular el ARL
-  ARL <- sum(solve(diag(6) - R) %*% rep(1, 6))
-  
-  return(ARL)
-}
-
-# Parámetros de simulación
-n_samples <- 1000  # Número de muestras
-sample_size <- 10  # Tamaño de cada muestra
-mu_0 <- 0  # Media del proceso bajo control
-sigma_0 <- 1  # Desviación estándar del proceso bajo control
-
-# Vector para almacenar los ARL calculados
-ARL_values <- numeric(n_samples)
-
-# Generar muestras y calcular ARL
-set.seed(123)  # Para reproducibilidad
-for (i in 1:n_samples) {
-  # Generar una muestra
-  sample_data <- rnorm(sample_size, mean = mu_0, sd = sigma_0)
-  
-  # Calcular la media y desviación estándar de la muestra
-  sample_mean <- mean(sample_data)
-  sample_sd <- sd(sample_data)
-  
-  # Calcular el ARL usando la función y guardarlo
-  ARL_values[i] <- calculate_ARL(sample_mean, sample_sd)
-}
-
-# Resumen de los ARL calculados
-cat("Resumen de los ARL calculados:\n")
-print(summary(ARL_values))
-
-# Histograma de los ARL
-hist(ARL_values, main = "Distribución de ARL", xlab = "ARL", breaks = 30)
-
+ggplot(plot_data, aes(x = Tiempo, y = Valor, color = Tipo, group = interaction(Tipo, Corrimiento))) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("blue", rep("red", length(corrimientos)))) +
+  labs(title = "Carta de Control con Corrimiento de Miú", 
+       x = "Número de Muestra", 
+       y = "Valor de la Media", 
+       color = "Tipo") +
+  theme_minimal()
