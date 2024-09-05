@@ -1,0 +1,372 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{adjustbox}
+\usepackage{amsmath}
+ \geometry{a4paper, total={170mm,257mm}, left=20mm, top=20mm,}
+ \usepackage{graphicx}
+ \usepackage{titling}
+ \usepackage[spanish]{babel}
+ \usepackage{enumitem}
+ \setlength{\parindent}{0pt}
+
+
+ \title{Índices de capacidad y cartas de control para procesos discretos}
+\author{2024-1}
+\date{\today}
+ 
+ \usepackage{fancyhdr}
+\fancypagestyle{plain}{%  the preset of fancyhdr 
+    \fancyhf{} % clear all header and footer fields
+    % \fancyfoot[R]{\includegraphics[width=2cm]{KULEUVEN_GENT_RGB_LOGO.png}}
+    \fancyfoot[L]{\thedate}
+    \fancyhead[L]{Taller 2. Control de calidad}
+    \fancyhead[R]{\theauthor}
+}
+\makeatletter
+\def\@maketitle{%
+  \newpage
+  \null
+  \vskip 1em%
+  \begin{center}%
+  \let \footnote \thanks
+    {\LARGE \@title \par}%
+    \vskip 1em%
+    %{\large \@date}%
+  \end{center}%
+  \par
+  \vskip 1em}
+\makeatother
+
+\usepackage{lipsum}  
+\usepackage{cmbright}
+
+
+\begin{document}
+
+\maketitle
+
+\noindent\begin{tabular}{@{}ll}
+    Autores & \\
+    & Michel Mendivenson Barragán Zabala \\
+    & Cesar Augusto Prieto Sarmiento \\
+    & Anderson Arley Quintero Morales \\
+     Docente & \\
+     & Carlos Arturo Panza Ospina
+\end{tabular}
+
+\subsubsection*{Ejercicio 2} \textbf{Una pieza terminada consta de un eje y un cojinete. El eje debe encajar del cojinete tal como se muestra en la figura:}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Punto 2.jpeg}
+    \caption{Eje y cojinete}
+    \label{fig:enter-label}
+\end{figure}
+
+\textbf{El diámetro interno del cojinete es una variable aleatoria $X_1$, que sigue una distribución normal con media de 1.5 y una desviación estándar de 0.002 pulgadas, mientras que el diámetro externo del eje $X_2$ también distribuye normalmente, pero con media de 1.48 y desviación estándar de 0.004 pulgadas. si ejes y cojinetes se fabrican independientemente. ¿Qué proporción de piezas no encajan?}
+
+\vspace{0.5cm}
+
+Tenemos dos variables aleatorias que distribuyen normal con los siguientes parámetros:
+
+$$X_1 \sim N(1.5,0.002^2)$$
+$$X_2 \sim N(1.48,0.004^2)$$
+
+Establecemos una nueva variable de la diferencia de las dos variables aleatorias anteriores lo que resulta en una normal de la siguiente forma:
+
+$$D=X_1 - X_2 \sim N(m_1 - m_2,\sigma_1+\sigma_2) = N(0.02,0.00002))$$ 
+
+Ahora debemos hallar la probabilidad de que la nueva variable aleatoria D sea mayor o igual a 0 es decir que el diámetro interno del cojinete sea mayor o igual al diámetro externo del eje: $P(D>=0)$ y estandarizamos la variable $Z=(0-0.02/0.00447))=-4.475$. Finalmente la probabilidad puede calcularse la siguiente $P(D>=0)= 1 - Z(-4.475)=0.99999612$  y si revisamos el valor de una z con esa probabilidad es de $0.99999612$ por lo tanto la proporción de piezas que no encajan es de $0.000003872$
+
+\subsubsection*{Ejercicio 3} \textbf{Se utiliza una carta $p$ con límites seis-sigma para el monitoreo de un proceso cuya fracción de no-conformidad objetivo es $p_0 = 0.08$ con muestras de tamaño $100$. Se pide:}
+
+\vspace{0.5cm}
+
+Para la solución de este ejercicio, debemos tener en cuenta que los límites de la carta $p$ para este caso estarán dados por $p \pm 3 \sqrt{\frac{p (1-p)}{n}}$ lo que numéricamente nos da aproximadamente el siguiente intervalo $(-0.01, 0.16)$. Este intervalo lo aproximaremos a $(0, 0.16)$ pues una proporción no puede ser negativa.
+
+\begin{enumerate}[label= \textbf{\alph*)}]
+    \item  \textbf{Calcular la probabilidad de cometer un error de tipo I utilizando para ello:}
+
+    El error tipo I se define como falsa alarma o aquellas muestras que dan una señal de que el proceso está fuera de control aún cuando no lo está. Generalmente denotamos este tipo de error como $\alpha$
+    
+    \begin{enumerate}[label= \textbf{\arabic*)}]
+        \item \textbf{La distribución de la cantidad de artículos no-conformes de una muestra.} 
+        
+        Como $\hat{p} = \frac{D}{n}$ con $D$ como la cantidad de artículos no conformes dentro de la muestra y $n$ como la cantidad total de observaciones dentro de la muestra: 
+        \begin{align*}
+            \alpha &= P(UCL < \hat{p} \lor LCL > \hat{p} \,\, | \,\, p = 0.08) &&\\
+            &= P(UCL < \hat{p} \,\, | \,\, p = 0.08) + P(LCL > \hat{p} \,\, | \,\, p = 0.08) && \\
+            &= P(UCL \times n < D \,\, | \,\, p = 0.08) + P(LCL \times n > D \,\, | \,\, p = 0.08) & & \text{Recuerde que $D \sim Bin(n, p)$ } \\
+            &= P(16.13 < D \,\, | \,\, p = 0.08) + P(0 > D \,\, | \,\, p = 0.08) & & \text{Ya que $UCL \approx 0.16$, $LCL = 0$ y $n = 100$} \\
+            &= 0.00241 + 0 && \\
+            \alpha &= 0.00241  &&
+        \end{align*}
+        Es decir, la probabilidad de que la carta $p$ con los límites establecidos en $(0, 0.16)$ de una falsa alarma es del $0.2 \%$ aproximadamente. 
+        \item \textbf{La aproximación Poisson por binomial de la cantidad de artículos no conformes en una muestra.}
+
+        Cuando $n \rightarrow \infty$  y cuando $p$ es lo suficientemente pequeño de forma que $np$ no sea infinito. Podemos aproximar una distribución binomial de parámetros $n$ y $p$ con una Poisson de media $np$. De esta forma:
+        \begin{align*}
+            \alpha &= P(UCL < \hat{p} \lor LCL > \hat{p} \,\, | \,\, p = 0.08) &&\\
+            &= P(UCL < \hat{p} \,\, | \,\, p = 0.08) + P(LCL > \hat{p} \,\, | \,\, p = 0.08) && \\
+            &= P(UCL \times n < D \,\, | \,\, p = 0.08) + P(LCL \times n > D \,\, | \,\, p = 0.08) & & \text{ $D \underset{n \to \infty}\sim  Poisson(np)$ } \\
+            &= P(16.13 < D \,\, | \,\, p = 0.08) + P(0 > D \,\, | \,\, p = 0.08) & & \text{Ya que $UCL \approx 0.16$, $LCL = 0$ y $n = 100$} \\
+            &= 0.00372 + 0 && \\
+            \alpha &= 0.00372  &&
+        \end{align*}
+
+        Es decir, la probabilidad de que la carta $p$ con los límites establecidos en $(0, 0.016)$ de una falsa alarma al aproximar la distribución binomial con una Poisson es del $0.4 \%$ aproximadamente. 
+        
+        \item \textbf{La aproximación normal por binomial de la cantidad de artículos no conformes en una muestra.}
+
+        Cuando $n \rightarrow \infty$. Podemos aproximar la distribución muestral de $\hat{p}$ con la distribución normal $N(p, \frac{p(1-p)}{n})$. De esta forma:
+        \begin{align*}
+            \alpha &= P(UCL < \hat{p} \lor LCL > \hat{p} \,\, | \,\, p = 0.08) &&\\
+            &= P(UCL < \hat{p} \,\, | \,\, p = 0.08) + P(LCL > \hat{p} \,\, | \,\, p = 0.08) && \\
+            &= P(0.16 < hat{p} | p = 0.08) + P(0 > hat{p} | p = 0.08) && \\
+            &= 0.00135 + 0.00159 && \\
+            \alpha &= 0.00294 && \\
+        \end{align*}
+
+        Es decir, la probabilidad de que la carta $p$ con los límites establecidos en $(0, 0.16)$ de una falsa alarma al aproximar la distribución de $\hat{p}$ con una normal es de alrededor del $0.3 \%$
+    
+    \end{enumerate}
+    \item \textbf{Utilizar un método adecuado para encontrar la probabilidad de cometer un error tipo II cuando la fracción de no conformidad cambia a $p_1 = 0.2$.}
+
+    El error tipo II está definido como aceptar una muestra cuando está fuera de control. Es decir, buscamos la probabilidad de que las observaciones produzcan una estimación que aún caiga dentro de los límites de control. De esta forma, usaremos a $\beta'$ para representar este tipo de error.
+
+    \begin{align*}
+        \beta' &= P(LCL < \hat{p} < UCL \,\, | \,\, p = 0.2) &&\\
+        &= P(0 < \hat{p} < 0.161388 \,\, | \,\, p = 0.2) && \text{Recuerde que $D \sim Bin(n,p)$} \\
+        &= P(0 \times 100 < D < 0.161388 \times 100 \,\, | \,\, p = 0.2) && \\
+        &= P(D < 17 \,\, | \,\, p = 0.2) && \\
+        \beta' &= 0.19234 &&
+    \end{align*}
+
+    Es decir, la carta $p$ para una fracción de no conformidad de $0.2$ con una fracción de no conformidad objetivo de $0.08$ la probabilidad de error tipo II en un paso es de aproximadamente $19\%$. 
+    
+    \item \textbf{Calcular la probabilidad de detectar el corrimiento indicado en el literal anterior a lo sumo en la cuarta muestra después de haber ocurrido.}
+
+    Teniendo en cuenta que en el literal \textit{b)} obtuvimos la  probabilidad de no detectar una señal en un paso cuando el control se salió de control, deberíamos calcular la probabilidad de que se detecte la señal en el paso inmediatamente siguiente: $\alpha' = (1 - \beta') = 0.80766$. Como las muestras son independientes en cada paso:
+
+    \begin{align*}
+        P(\text{Detectar la señal a lo sumo en cuatro pasos})&= P(\text{Detectar la señal inmediatamente})&& \\
+        &+ P(\text{Detectar en el siguiente paso}) && \\
+        &+ P(\text{Detectar la señal en t + 2}) && \\
+        &+ P(\text{Detectar la señal en t + 3}) && \\
+        &= \alpha' + (\beta' \times \alpha') + (\beta' \times \beta' \times \alpha') + (\beta' \times \beta' \times \beta' \times \alpha') \\
+        &= 0.80766 + 0.1553453 + 0.02987912 + 0.00574695 \\
+        &= 0.9986314 \\
+    \end{align*}
+
+    La probabilidad de detectar el cambio en al menos las primeras cuatro interacciones es de aproximadamente $99.8\%$.
+\end{enumerate}
+
+\newpage
+
+\subsubsection*{Ejercicio 4} \textbf{Un grupo de mantenimiento mejora la efectividad de su trabajo de reparación monitoreando el número de solicitudes de mantenimiento que requieren de una segunda llamada para completar el servicio. Se cuenta con los siguientes reportes correspondientes a 20 semanas de inspección}
+
+\begin{table}[h]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{tabular}{ccc}
+            \toprule
+            \textbf{Semana} & \textbf{Total Sol} & \textbf{2da. Visita Req} \\
+            \midrule
+            1  & 200 & 6 \\
+            2  & 250 & 8 \\
+            3  & 250 & 9 \\
+            4  & 250 & 7 \\
+            5  & 200 & 3 \\
+            6  & 200 & 4 \\
+            7  & 150 & 2 \\
+            8  & 150 & 1 \\
+            9  & 150 & 0 \\
+            10 & 150 & 2 \\
+            \bottomrule
+        \end{tabular}
+        \caption{Datos: Semana 1 a 10}
+        \label{tab:datos5_parte1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{tabular}{ccc}
+            \toprule
+            \textbf{Semana} & \textbf{Total Sol} & \textbf{2da Visita Req} \\
+            \midrule
+            11 & 100 & 1 \\
+            12 & 100 & 0 \\
+            13 & 100 & 1 \\
+            14 & 200 & 4 \\
+            15 & 200 & 5 \\
+            16 & 200 & 3 \\
+            17 & 200 & 10 \\
+            18 & 200 & 4 \\
+            19 & 250 & 7 \\
+            20 & 250 & 6 \\
+            \bottomrule
+        \end{tabular}
+        \caption{Datos: Semana 11 a 20}
+        \label{tab:datos5_parte2}
+    \end{minipage}
+\end{table}
+
+\textbf{Diseñar una carta adecuada para monitorear el proceso y justificar la respuesta acerca de la escogencia del diseño propuesto.}
+
+\vspace{0.5cm}
+
+Al leer el problema propuesto, pensamos en una situación de mantenimiento en la que se requiere una segunda llamada para completar el servicio. Esto se puede considerar una situación de no conformidad, ya que el primer servicio no pudo solucionar completamente el problema.\\
+
+Por lo tanto, la idea sería usar la carta $P$ para no conformidades. Para esto, primero debemos notar que la columna \textit{Total Sol} actúa como el tamaño de muestra, la columna \textit{Semana} indica la periodicidad con la que se toman las muestras, y \textit{2da. Visita Req} representa la cantidad de servicios que requirieron una segunda visita. De este modo, esta última columna sería la indicadora de no conformidad en los servicios prestados durante una semana.\\
+
+A partir de los datos presentados en estas tablas, podemos observar que la columna que representa el número de muestras es de carácter variable. Es decir, no hay un solo tamaño de muestra o un número fijo de mantenimientos realizados por semana. Con esto en mente, para monitorear cómo es la proporción de no conformidades en los mantenimientos, podríamos crear una carta de control P con límites variables. Crear una carta de control con límites variables nos ofrece los siguientes beneficios:\\
+
+\begin{itemize}
+    \item Permite mantener consistencia en los niveles de control, reduciendo la probabilidad de falsas alarmas y omisiones en la detección de problemas.
+    \item Adapta los límites de control a la variabilidad natural del tamaño de muestra, reflejando de manera más precisa la variabilidad esperada del proceso.
+    \item Mejora la detección de cambios significativos en el proceso, ajustando los límites para detectar anomalías verdaderas con mayor precisión.
+    \item Proporciona una evaluación más realista de la capacidad del proceso, ajustándose a las condiciones operativas reales y apoyando decisiones basadas en datos precisos.
+\end{itemize}
+
+Para realizar este proceso de crear la carta de control para P, utilizamos las siguientes definiciones:
+
+\begin{align*}
+    \bar{TS} &= \frac{1}{n} \sum_{i=1}^{n} TS_i \quad \text{(Media de total de solicitudes)} \\
+    \bar{SVR} &= \frac{1}{n} \sum_{i=1}^{n} SVR_i \quad \text{(Media de segunda visita requerida)} \\
+\end{align*}
+
+\begin{align*}
+    \bar{P} &= \frac{\sum_{i=1}^{n} SVR_i}{\sum_{i=1}^{n} TS_i} \quad \text{(Proporción promedio de segunda visita)} \\
+    \bar{Q} &= 1 - \bar{P} \quad \text{(Proporción de no-segunda visita)} \\
+    P_i &= \frac{SVR_i}{TS_i} \quad \text{(Proporción de segunda visita en la semana } i\text{)} \\
+    S_p &= \sqrt{\frac{P_i (1 - P_i)}{TS_i}} \quad \text{(Desviación estándar de la proporción en la semana } i\text{)}
+\end{align*}
+
+Los límites de control inferior y superior (LCL y UCL) para la carta de control P con tamaño de muestra variable se calculan de la siguiente manera:
+
+\begin{align*}
+    LCL_i &= \max\left(0, \bar{P} - 3 \sqrt{\frac{\bar{P} (1 - \bar{P})}{TS_i}}\right) \\
+    UCL_i &= \min\left(1, \bar{P} + 3 \sqrt{\frac{\bar{P} (1 - \bar{P})}{TS_i}}\right)
+\end{align*}
+
+donde $TS_i$ es el tamaño de la muestra en la semana $i$ y $SVR_i$ es el número de segundas visitas requeridas en la semana $i$.\\
+
+Con lo anterior, luego de realizar los respectivos calculos mencionados anteriormente, obtenemos la siguiente tabla como ayuda para obtener luego la grafica de la carta de control: \\
+
+\begin{table}[h]
+    \centering
+    \begin{adjustbox}{width= 0.8\textwidth}
+    \begin{tabular}{ccccccc}
+        \toprule
+        \textbf{Sem} & \textbf{TS} & \textbf{SVR} & \textbf{Pi} & \textbf{Sp} & \textbf{LCL} & \textbf{UCL} \\
+        \midrule
+         1  & 200 &  6 & 0.030000000 & 0.012062338 & 0 & 0.05334159 \\
+         2  & 250 &  8 & 0.032000000 & 0.011131217 & 0 & 0.05004685 \\
+         3  & 250 &  9 & 0.036000000 & 0.011782020 & 0 & 0.05004685 \\
+         4  & 250 &  7 & 0.028000000 & 0.010433791 & 0 & 0.05004685 \\
+         5  & 200 &  3 & 0.015000000 & 0.008595057 & 0 & 0.05334159 \\
+         6  & 200 &  4 & 0.020000000 & 0.009899495 & 0 & 0.05334159 \\
+         7  & 150 &  2 & 0.013333333 & 0.009365026 & 0 & 0.05816952 \\
+         8  & 150 &  1 & 0.006666667 & 0.006644407 & 0 & 0.05816952 \\
+         9  & 150 &  0 & 0.000000000 & 0.000000000 & 0 & 0.05816952 \\
+        10  & 150 &  2 & 0.013333333 & 0.009365026 & 0 & 0.05816952 \\
+        11  & 100 &  1 & 0.010000000 & 0.009949874 & 0 & 0.06626847 \\
+        12  & 100 &  0 & 0.000000000 & 0.000000000 & 0 & 0.06626847 \\
+        13  & 100 &  1 & 0.010000000 & 0.009949874 & 0 & 0.06626847 \\
+        14  & 200 &  4 & 0.020000000 & 0.009899495 & 0 & 0.05334159 \\
+        15  & 200 &  5 & 0.025000000 & 0.011039701 & 0 & 0.05334159 \\
+        16  & 200 &  3 & 0.015000000 & 0.008595057 & 0 & 0.05334159 \\
+        17  & 200 & 10 & 0.050000000 & 0.015411035 & 0 & 0.05334159 \\
+        18  & 200 &  4 & 0.020000000 & 0.009899495 & 0 & 0.05334159 \\
+        19  & 250 &  7 & 0.028000000 & 0.010433791 & 0 & 0.05004685 \\
+        20  & 250 &  6 & 0.024000000 & 0.009679669 & 0 & 0.05004685 \\
+        \bottomrule
+    \end{tabular}
+    \end{adjustbox}
+    \caption{Tabla de datos con columnas adicionales}
+    \label{tab:datos_completa}
+\end{table}
+
+\newpage
+
+Así, al graficar la carta an base en los resultados obtenidos anteriormente y mostrados en la tabal, obtenemos el siguiente resultado: 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{CartaP_Punto4.png}
+    \caption{Carta de Control para la Proporcion de no Conformidad}
+    \label{fig:CartaP-NoConformida}
+\end{figure}
+
+La gráfica muestra la carta de control para la proporción de no conformidades. Al analizarla, podemos observar que el proceso de las proporciones de no conformidad se encuentra dentro de los límites de control establecidos. Esto indica que el proceso está bajo control y que la proporción de no conformidades se mantiene estable dentro de los parámetros aceptables. La estabilidad del proceso sugiere que las variaciones en la proporción de no conformidades están dentro del rango esperado, y no hay evidencia de cambios significativos o problemas en el proceso de mantenimiento.
+
+
+\subsubsection*{Ejercicio 5} \textbf{Debe diseñarse una carta de control para un proceso de fabricación de refrigeradores. La unidad de inspección es un refrigerador. Datos preliminares sugieren la existencia de 16 disconformidades al inspeccionar 30 refrigeradores. Se pide:}
+
+\begin{enumerate}[label = \textbf{\alph*)}]
+    \item \textbf{Diseñar una carta adecuada con límites seis-sigma.}
+
+    Teniendo en cuenta que hubieron 16 disconformidades en 30 refrigeradores y que hablamos de disconformidades por unidad y no unidades no conformes utilizaremos la carta $C$ para controlar la variabilidad del proceso. De esta forma: 
+    \begin{itemize}
+        \item $\bar{C} = \frac{16}{30} \approx 0.533$
+        \item $CL = \bar{C}$
+        \item \textbf{Límites:} $CL \pm 3 \times \sqrt{\bar{C}}$
+    \end{itemize}
+
+    Es decir, los límites de control están dados por $(-1.6, 2.72)$ que aproximaremos a $(0,2.7)$ teniendo en cuenta que no puede existir un conteo menor que cero.
+    
+    \item \textbf{Calcular el riesgo $\alpha$ de la carta diseñada en el literal anterior.}
+
+    En este caso $\alpha$ se calcula como la suma de las probabilidades de que la variable de no conformidad este fuera de los limites cuando el proceso esta bajo control o lo que es lo mismo la probabilidad de que una Poisson de media $\bar{C}$ sea mayor que 2.7 o mayor o igual que 3 por ser discreta: $$\alpha=P(X > 2.7 \,\, | \,\, \lambda = 0.533) = 0.01701$$ 
+    
+    \item \textbf{Calcular el riesgo $\beta$ de la carta diseñada si la cantidad promedio es de dos disconformidades por refrigerador inspeccionado.}
+
+    Para el caso de $\beta$ se calcula como la probabilidad de que una muestra este dentro de los limites de control cuando el proceso esta fuera de control o que la carta de un falso positivo: $$\beta=P(X < 2.7 \,\, | \,\, \lambda = 2) = 0.67668$$ 
+    Es decir, la probabilidad de un falso positivo para una desviación de dos disconformidades es de aproximadamente $46.4\%$  
+    
+    \item \textbf{Calcular la longitud media de corrida de la carta diseñada si la cantidad promedio es de dos disconformidades por refrigerador inspeccionado.}
+
+    Para calcular la longitud media de corrida (LCL) de la carta diseñada cuando la cantidad promedio es de dos disconformidades por refrigerador inspeccionado, utilizamos la fórmula:
+
+    \begin{align*}
+    LCL = \frac{1}{1 - \beta}
+    \end{align*}
+    
+    Dado que el riesgo $\beta$ de la carta es 0.53538 (como se determinó en la parte c), podemos calcular la LCL como:
+
+    \begin{align*}
+    \text{LCL} = \frac{1}{1 - 0.67668}
+    \end{align*}
+
+    \begin{align*}
+    \text{LCL} \approx 3.092911
+    \end{align*}
+
+    Por lo tanto, la longitud media de corrida de la carta de control es aproximadamente \textbf{3.092911}.
+
+\end{enumerate}
+
+
+\end{document}
+
+
+
+C)Betha se calcula como la probabilidad de que una muestra este dentro de los limites de control cuando el proceso esta fuera de control
+
+Betha=P(0<=X<=2.723|lambda=2)=0.6766
+
+Para calcular las longitud media de corrida tenemos que tener en cuenta dos casos, uno cuando el proceso esta en control y cuando no lo esta
+
+D)
+
+1) Bajo control
+
+ARL=1/Alpha=58.78
+
+2) Fuera de control
+
+ARL=1/1-betha=3.0921
