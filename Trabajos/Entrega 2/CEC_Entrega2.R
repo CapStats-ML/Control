@@ -96,9 +96,6 @@ legend(x = 25, y = -1.5 , legend = c('UCL & LCL', 'Obs', 'LC'), title = 'Lineas'
 Periodo1 <- read.csv("~/REPOS GIT/Control/Trabajos/Entrega 2/Periodo1.txt", 
                      colClasses = c("character", "numeric", "numeric"), 
                      col.names = c("Mes", "Dias", "DaysBetween"))
-Periodo2 <- read.csv("~/REPOS GIT/Control/Trabajos/Entrega 2/Periodo2.txt", 
-                     colClasses = c("character", "numeric", "numeric"),
-                     col.names = c("Mes", "Dias", "DaysBetween"))
 
 # Quitar NA's 
 
@@ -112,19 +109,14 @@ sum(is.na(Periodo1$DaysBetween))
 
 Periodo1 <- drop_na(Periodo1)
 
-sum(is.na(Periodo2$Dias))
-sum(is.na(Periodo2$DaysBetween))
-
-Periodo2 <- drop_na(Periodo2)
-
 # Prueba de normalidad con qqplot
 
-# Grafica 1
+# Grafica QQplot
 # Configurar márgenes y fondo
 par(mar = c(5.1, 5.1, 4.1, 2.1), bg = 'white')
 
 # Crear el QQ plot con estilos personalizados
-qqnorm(Periodo1$DaysBetween, main = "QQ Plot Periodo 1", col = '#423f32',  pch = 20, cex = 1.5, 
+qqnorm(Periodo1$DaysBetween, main = "QQ Plot tiempo entre Asesinatos", col = '#423f32',  pch = 20, cex = 1.5, 
        family = "sans", bty = "L", xlab = "Cuantiles teóricos", ylab = "Cuantiles de los datos",
        font.lab = 2, cex.lab = 0.8, font = 3, font.main = 4, col.main = 'black', cex.axis = 0.7)
 
@@ -141,99 +133,185 @@ legend(x = 1, y = 5, legend = c('Tendencia', 'Observaciones'), col = c('#6b8e8e'
        bg = 'white', text.font = 2, text.col = '#423f32')
 
 
-# Grafica 2
-# Configurar márgenes y fondo
-par(mar = c(5.1, 5.1, 4.1, 2.1), bg = 'white')
-
-# Crear el QQ plot con estilos personalizados
-qqnorm(Periodo2$DaysBetween, main = "QQ Plot Periodo 1", col = '#423f32',  pch = 20, cex = 1.5, 
-       family = "sans", bty = "L", xlab = "Cuantiles teóricos", ylab = "Cuantiles de los datos",
-       font.lab = 2, cex.lab = 0.8, font = 3, font.main = 4, col.main = 'black', cex.axis = 0.7)
-
-# Añadir línea de referencia con estilo personalizado
-qqline(Periodo2$DaysBetween, col = '#6b8e8e', lwd = 1.2)
-
-# Añadir líneas de guía
-abline(h = seq(0, 55, 5), col = '#d6c6b8', lty = 'dotted')
-abline(v = seq(-3, 3, 0.5), col = '#d6c6b8', lty = 'dotted')
-
-# Añadir leyenda
-legend(x = 1, y = 5, legend = c('Tendencia', 'Observaciones'), col = c('#6b8e8e', '#423f32'), 
-       lty = c('solid', 'none'), pch = c(NA, 20), lwd = c(1.2, NA), cex = 0.8, bty = 'n', 
-       bg = 'white', text.font = 2, text.col = '#423f32')
-
-
-# Calculos necesarios para construir la carta R
+# Calculos necesarios para construir la carta Rango Moviles y X 
 # Podemos entender la variables DaysBetween como el rango de días entre homicidios
 # Con lo cual no tenemos que calcular R para cada observacion sino R_barra y encontrar 
 # los respectivos valores de  D4 y D3 para los limites de control de la carta R
 
-# Calcular el rango promedio
+# Calcular la media y la desviación estándar
 
-RP1barra <- mean(Periodo1$DaysBetween)
-RP2barra <- mean(Periodo2$DaysBetween)
+media <- mean(Periodo1$DaysBetween)
+sd <- sd(Periodo1$DaysBetween)
 
-# Calcular los límites de control para la carta R
+# Límites de Control
+UCL <- media + 3 * sd
+LCL <- max(media - 3 * sd, 0)
 
+# Grafiar la carta de control
 
+par(mar = c(5.1, 5.1, 4.1, 2.1), bg = '#fffbf7') # Configurar márgenes y fondo
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Crear las cartas de control para las medias y los rangos
-
-par(mfrow = c(2, 1), mar = c(5.1, 5.1, 4.1, 2.1), bg = '#fffbf7') # Configurar márgenes y fondo
-
-# Carta de control para las medias
-plot(Periodo1$DaysBetween, type = 'o', col = '#423f32', pch = 20, cex = 1.5, ylim = c(LCL_Xbarra, UCL_Xbarra), 
-     family = "sans", bty = "L", xlab = 'Tiempo de medición', ylab = 'Días entre homicidios',  
-     font.lab = 2, cex.lab = 0.8, font = 3, font.main = 4, main = 'Carta de control para las medias', 
-     cex.axis = 0.7, col.main = 'black', sub = 'Periodo 1', font.sub = 2, cex.sub = 0.8, fg = '#423f32', 
-     col.sub = '#ff6f61')
+plot(Periodo1$DaysBetween, type = 'o', col = '#423f32', pch = 20, cex = 1.5, ylim = c(LCL, UCL), family = "sans", bty = "L",
+     xlab = 'Observacion Temporal', ylab = 'Tiempo entre Ass \n Tranformadas',  font.lab = 2, cex.lab = 0.8,
+     font = 3, font.main = 4, main = 'Carta de control observaciones', cex.axis = 0.7, col.main = 'black',
+     sub = 'Tiempo entre asesinatos', font.sub = 2, cex.sub = 0.8, fg = '#423f32', col.sub = '#ff6f61')
 
 # Líneas de guía
-abline(h = seq(LCL_Xbarra, UCL_Xbarra, 5), col = '#d6c6b8', lty = 'dotted')
-abline(v = seq(1, nrow(Periodo1), 5), col = '#d6c6b8', lty = 'dotted')
+abline(h = seq(-30, 50, 5), col = '#d6c6b8', lty = 'dotted')
+abline(v = seq(0, 30, 2.5), col = '#d6c6b8', lty = 'dotted')
 
 # Líneas de control superior e inferior
-abline(h = UCL_Xbarra, col = '#ff6f61', lty = 'dashed', lwd = 1.8)
-abline(h = LCL_Xbarra, col = '#ff6f61', lty = 'dashed', lwd = 1.8)
+abline(h = UCL, col = '#ff6f61', lty = 'dashed', lwd = 1.8)
+abline(h = LCL, col = '#ff6f61', lty = 'dashed', lwd = 1.8)
 
-# Línea central (valor nominal de la media)
-abline(h = medias1, col = '#6b8e8e', lwd = 1.2)
+# Línea central (valor nominal de Z = 0)
+abline(h = media, col = '#6b8e8e', lwd = 1.2)
 
 # Leyenda
-legend(x = 25, y = 30, legend = c('UCL & LCL', 'Obs', 'LC'), title = 'Lineas',
+legend(x = 20, y = 45 , legend = c('UCL & LCL', 'Obs', 'LC'), title = 'Lineas',
+       col = c('#ff6f61', '#423f32', '#6b8e8e'), lty = c('dashed', 'solid', 'solid'), 
+       lwd = c(1.8, 1.8, 1.8), cex = 0.8, bty = 'n', bg = 'white', text.font = 2,
+       text.col = '#423f32')
+
+# Carta de Rango Movil
+
+k <- 2
+rango_movil <- sapply(1:(length(Periodo1$DaysBetween) - k + 1), function(i) max(Periodo1$DaysBetween[i:(i + k - 1)]) - min(Periodo1$DaysBetween[i:(i + k - 1)]))
+
+# Media y desviación estándar de los rangos móviles
+media_rango <- mean(rango_movil)
+sd_rango <- sd(rango_movil)
+
+# Límites de Control para la carta de rango móvil
+UCL_rango <- media_rango + 3 * sd_rango
+LCL_rango <- max(media_rango - 3 * sd_rango, 0)
+
+# Graficar la carta de rango móvil
+
+par(mar = c(5.1, 5.1, 4.1, 2.1), bg = '#fffbf7') # Configurar márgenes y fondo
+
+plot(rango_movil, type = 'o', col = '#423f32', pch = 20, cex = 1.5, ylim = c(LCL_rango - 1, UCL_rango + 1), family = "sans", bty = "L",
+     xlab = 'Observacion Temporal', ylab = 'Rango del tiempo\nEntre Asesinatos',  font.lab = 2, cex.lab = 0.8,
+     font = 3, font.main = 4, main = 'Carta de control MR', cex.axis = 0.7, col.main = 'black',
+     sub = 'Tiempo entre asesinatos', font.sub = 2, cex.sub = 0.8, fg = '#423f32', col.sub = '#ff6f61')
+
+# Líneas de guía
+abline(h = seq(-20, 40, 5), col = '#d6c6b8', lty = 'dotted')
+abline(v = seq(0, 30, 2.5), col = '#d6c6b8', lty = 'dotted')
+
+# Líneas de control superior e inferior
+abline(h = UCL_rango, col = '#ff6f61', lty = 'dashed', lwd = 1.8)
+abline(h = LCL_rango, col = '#ff6f61', lty = 'dashed', lwd = 1.8)
+
+# Línea central (valor nominal de Z = 0)
+abline(h = media_rango, col = '#6b8e8e', lwd = 1.2)
+
+# Leyenda
+legend(x = 20, y = 35 , legend = c('UCL & LCL', 'Obs', 'LC'), title = 'Lineas',
        col = c('#ff6f61', '#423f32', '#6b8e8e'), lty = c('dashed', 'solid', 'solid'), 
        lwd = c(1.8, 1.8, 1.8), cex = 0.8, bty = 'n', bg = 'white', text.font = 2,
        text.col = '#423f32')
 
 
-# b) Transfórmense los datos usando la raíz 0.25 y diséñese una carta de control 
+# b) Transfórmense los datos usando la  x = y^(0.25) y diséñese una carta de control 
 #    apropiada para la situación.
 
 
+Trans <- Periodo1$DaysBetween^(0.25)
 
+# Grafica QQplot
+# Configurar márgenes y fondo
+par(mar = c(5.1, 5.1, 4.1, 2.1), bg = 'white')
 
+# Crear el QQ plot con estilos personalizados
+qqnorm(Trans, main = "QQ Plot Periodo Transformado", col = '#423f32',  pch = 20, cex = 1.5, 
+       family = "sans", bty = "L", xlab = "Cuantiles teóricos", ylab = "Cuantiles de los datos",
+       font.lab = 2, cex.lab = 0.8, font = 3, font.main = 4, col.main = 'black', cex.axis = 0.7)
 
+# Añadir línea de referencia con estilo personalizado
+qqline(Trans, col = '#6b8e8e', lwd = 1.2)
+
+# Añadir líneas de guía
+abline(h = seq(0, 3.5, 0.25), col = '#d6c6b8', lty = 'dotted')
+abline(v = seq(-3, 3, 0.5), col = '#d6c6b8', lty = 'dotted')
+
+# Añadir leyenda
+legend(x = 1, y = 1.25, legend = c('Tendencia', 'Observaciones'), col = c('#6b8e8e', '#423f32'), 
+       lty = c('solid', 'none'), pch = c(NA, 20), lwd = c(1.2, NA), cex = 0.8, bty = 'n', 
+       bg = 'white', text.font = 2, text.col = '#423f32')
+
+# Calcular la media y la desviación estándar
+
+media <- mean(Trans)
+sd <- sd(Trans)
+
+# Límites de Control
+UCL <- media + 3 * sd
+LCL <- media - 3 * sd
+
+# Grafiar la carta de control
+
+par(mar = c(5.1, 5.1, 4.1, 2.1), bg = '#fffbf7') # Configurar márgenes y fondo
+
+plot(Trans, type = 'o', col = '#423f32', pch = 20, cex = 1.5, ylim = c(LCL, UCL), family = "sans", bty = "L",
+     xlab = 'Observacion Temporal', ylab = 'Tiempo entre Ass \n Tranformadas',  font.lab = 2, cex.lab = 0.8,
+     font = 3, font.main = 4, main = 'Carta de control Obs. Transformadas', cex.axis = 0.7, col.main = 'black',
+     sub = 'Tiempo entre asesinatos', font.sub = 2, cex.sub = 0.8, fg = '#423f32', col.sub = '#ff6f61')
+
+# Líneas de guía
+abline(h = seq(-3, 3, 0.5), col = '#d6c6b8', lty = 'dotted')
+abline(v = seq(0, 30, 2.5), col = '#d6c6b8', lty = 'dotted')
+
+# Líneas de control superior e inferior
+abline(h = UCL, col = '#ff6f61', lty = 'dashed', lwd = 1.8)
+abline(h = LCL, col = '#ff6f61', lty = 'dashed', lwd = 1.8)
+
+# Línea central (valor nominal de Z = 0)
+abline(h = media, col = '#6b8e8e', lwd = 1.2)
+
+# Leyenda
+legend(x = 20, y = 1 , legend = c('UCL & LCL', 'Obs', 'LC'), title = 'Lineas',
+       col = c('#ff6f61', '#423f32', '#6b8e8e'), lty = c('dashed', 'solid', 'solid'), 
+       lwd = c(1.8, 1.8, 1.8), cex = 0.8, bty = 'n', bg = 'white', text.font = 2,
+       text.col = '#423f32')
+
+# Carta de Rango Movil
+
+k <- 2
+rango_movil <- sapply(1:(length(Trans) - k + 1), function(i) max(Trans[i:(i + k - 1)]) - min(Trans[i:(i + k - 1)]))
+
+# Media y desviación estándar de los rangos móviles
+media_rango <- mean(rango_movil)
+sd_rango <- sd(rango_movil)
+
+# Límites de Control para la carta de rango móvil
+UCL_rango <- media_rango + 3 * sd_rango
+LCL_rango <- media_rango - 3 * sd_rango
+
+# Graficar la carta de rango móvil
+
+par(mar = c(5.1, 5.1, 4.1, 2.1), bg = '#fffbf7') # Configurar márgenes y fondo
+
+plot(rango_movil, type = 'o', col = '#423f32', pch = 20, cex = 1.5, ylim = c(LCL_rango - 1, UCL_rango + 1), family = "sans", bty = "L",
+     xlab = 'Observacion Temporal', ylab = 'Rango del tiempo\nEntre Asesinatos',  font.lab = 2, cex.lab = 0.8,
+     font = 3, font.main = 4, main = 'Carta de control MR', cex.axis = 0.7, col.main = 'black',
+     sub = 'Tiempo entre asesinatos', font.sub = 2, cex.sub = 0.8, fg = '#423f32', col.sub = '#ff6f61')
+
+# Líneas de guía
+abline(h = seq(-3, 3, 0.25), col = '#d6c6b8', lty = 'dotted')
+abline(v = seq(0, 30, 2.5), col = '#d6c6b8', lty = 'dotted')
+
+# Líneas de control superior e inferior
+abline(h = UCL_rango, col = '#ff6f61', lty = 'dashed', lwd = 1.8)
+abline(h = LCL_rango, col = '#ff6f61', lty = 'dashed', lwd = 1.8)
+
+# Línea central (valor nominal de Z = 0)
+abline(h = media_rango, col = '#6b8e8e', lwd = 1.2)
+
+# Leyenda
+legend(x = 20, y = -0.5 , legend = c('UCL & LCL', 'Obs', 'LC'), title = 'Lineas',
+       col = c('#ff6f61', '#423f32', '#6b8e8e'), lty = c('dashed', 'solid', 'solid'), 
+       lwd = c(1.8, 1.8, 1.8), cex = 0.8, bty = 'n', bg = 'white', text.font = 2,
+       text.col = '#423f32')
 
 
