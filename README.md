@@ -11,12 +11,14 @@ La idea de este repo es ir desarrollando la tematica de la asignatura y que este
 
 - **TALLERES**
 
-     - **Taller 1**  Se desarrollo el el primer taller de la asignatura con el objetivo de interiorizar los conceptos practicos sobre la construccion de cartas de control 
+     - **Taller 1**  Se desarrollo el primer taller de la asignatura con el objetivo de interiorizar los conceptos practicos sobre la construccion de cartas de control
+     - **Taller 2**  Se desarrollo el segundo taller de la asignatura con el objetivo de interiorizar los conceptos practicos sobre la construccion de indicadores de capacidad, la construccion de cartas de control para proporciones de no conformidad y numero de fallas por unidad de producción
 
 - **ENTREGAS**
 
-     - **Entrega 1** Se desarrollo la entrega de ejercicios propuestos para el docente con el fin de explorar a groso modo la forma en la que funciona la simulacion de cartas de control para encontrar las caracteristicas más significativas de estas en terminos de ARL, Curvas OC y demás.
-     - **Corrección Entrega 1** Teniendo en cuenta las correcciones del docente y desarrollo de los otros compañero de clase, se realizaron las correcciones de la ~Entrega 1~ esta vez teniendo más rigurosidad al momento de la presentacion de los resultados.
+     - [**Entrega 1**](https://github.com/CapStats-ML/Control/tree/master/Trabajos/Entrega%201) Se desarrollo la entrega de los ejercicios propuestos por el docente con el fin de explorar a groso modo la forma en la que funciona la simulacion de cartas de control para encontrar las caracteristicas más significativas de estas en terminos de ARL, Curvas OC y demás.
+          - [**Corrección Entrega 1**](https://github.com/CapStats-ML/Control/tree/master/Trabajos/Correcion%20Entrega%201) Teniendo en cuenta las correcciones del docente y desarrollo de los otros compañero de clase, se realizaron las correcciones de la ~Entrega 1~ esta vez teniendo más rigurosidad al momento de la presentacion de los resultados.
+     - [**Entrega 2**](https://github.com/CapStats-ML/Control/tree/master/Trabajos/Entrega%202) Se desarrollo la entrega de los ejercicios propuesto por el docente con el fin de explorar a grosomodo la forma en la que funciona las cartas para la proporcion de no conformidad y la cantidad de defectos por unidad, además de eso, el ***Punto 4*** de esta entrega señalaba un reto sobre como se podría llevar el control de tiempos de fallas para datos de mortalidad de una ciudad en el año 1989 para el cual se propuso la solucion al desarrollo del problema.
 
 - **MATERIAL EXTRA**
 
