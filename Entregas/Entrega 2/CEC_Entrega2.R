@@ -75,6 +75,55 @@ legend(x = 25, y = -1.5 , legend = c('UCL & LCL', 'Obs', 'LC'), title = 'Lineas'
        lwd = c(1.8, 1.8, 1.8), cex = 0.8, bty = 'n', bg = 'white', text.font = 2,
        text.col = '#423f32')
 
+# Evaluemos el rendimento de la carta de control, para ellos vamos a calcular el ARL
+
+# Función para calcular la probabilidad de estar dentro de los límites de control
+Prob_in_control <- function(p0, n){
+  # Cálculo de Z utilizando la proporción nominal p0
+  LCL <- -3  # Límite inferior
+  UCL <- 3   # Límite superior
+  
+  # La probabilidad de que Z esté dentro de los límites sigue una distribución normal estándar
+  P_in_control <- pnorm(UCL, mean = 0, sd = 1) - pnorm(LCL, mean = 0, sd = 1)
+  
+  return(P_in_control)
+}
+
+# Calcular el ARL bajo control
+P_in_control <- Prob_in_control(p0, tamaños)
+ARL_bajo_control <- 1 / (1 - P_in_control)
+
+# Mostrar el ARL
+ARL_bajo_control
+
+# Comprobemos 4 con corrimientos de 0.025 hacia arriba y hacia abajo
+
+P0_i <- seq(0.025, 0.2, 0.025)
+
+# Aplica la funcion StanCC para cada valor de P0_i y tamaños
+
+Matriz_Zi <- sapply(P0_i, function(p0_i) StanCC(tamaños, proporciones, p0_i))
+
+# Calcular el ARL para cada valor de P0_i 
+
+ARL_i <- sapply(P0_i, function(p0_i) 1 / (1 - Prob_in_control(p0_i, tamaños)))
+
+colMeans(Matriz_Zi)
+var(Matriz_Zi)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # EJERCICIO 4 ----
 
 # Kittlitz (1999) presenta datos sobre homicidios en Waco (Texas, EU) para los años 
