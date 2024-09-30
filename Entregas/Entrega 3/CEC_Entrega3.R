@@ -1,3 +1,42 @@
+# Funcion para simular la carta Cusum 
+
+# Función para simular una carta CUSUM
+simular_cusum <- function(n = 100, mu0 = 0, sigma = 1, shift = 1, k = 0.5, h = 5) {
+  # Generar datos
+  x <- c(rnorm(n/2, mu0, sigma), rnorm(n/2, mu0 + shift * sigma, sigma))
+  
+  # Inicializar estadísticas CUSUM
+  C_pos <- numeric(n)
+  C_neg <- numeric(n)
+  
+  # Condiciones iniciales
+  C_pos[1] <- max(0, (x[1] - mu0) / sigma - k)
+  C_neg[1] <- min(0, (x[1] - mu0) / sigma + k)
+  
+  # Calcular CUSUM para el resto de los datos
+  for (i in 2:n) {
+    C_pos[i] <- max(0, C_pos[i-1] + (x[i] - mu0) / sigma - k)
+    C_neg[i] <- min(0, C_neg[i-1] + (x[i] - mu0) / sigma + k)
+  }
+  
+  # Graficar
+  plot(1:n, x, type = "l", ylim = c(min(c(x, C_neg, -h/2)), max(c(x, C_pos, h/2)) - 10),
+       main = "CARTA CUSUM SIMULADA", xlab = "Muestra", ylab = "Valor", cex.lab = 0.8,
+       lwd = 1.2, font.main = 2, cex.axis = 0.8, cex.main = 1, col.main = 'black', family = 'sans',
+       bty = 'L', fg = 'black', col.axis = 'black',col.lab = 'black', font.axis = 1, font.lab = 2)
+  lines(1:n, C_pos, col = "#d50000", lwd = 2)
+  lines(1:n, C_neg, col = "#432c9b", lwd = 2)
+  abline(h = c(-h/2, h/2), col = "darkgreen", lty = 1)
+  abline(h = mu0, col = "gray25", lty = 3)
+  legend(x = 5, y = 20, legend = c("Datos", "CUSUM+", "CUSUM-", "Límites"), cex = 0.8,
+         col = c("black", "#d50000", "#432c9b", "darkgreen"), lty = c(1, 1, 1, 2))
+}
+
+# Ejecutar la simulación
+set.seed(123)
+simular_cusum()
+
+
 # Función para calcular ARL de la carta CUSUM
 CUSUM_ARL = function(mu = 0, sd = 1,                 # Parámetros reales del proceso
                      n = 5,                          # Tamaño de subgrupo racional
@@ -71,9 +110,9 @@ params_05 = lapply(k, function(k) EscogerKH(ARL_deseado = 200, k = k)$h)
 # Evaluar el comportamiento del ARL
 Corrimientos = seq(0, 2, 0.05)
 
-ARL <- matrix(0, nrow = length(Corrimientos), ncol = 2)
+ARL1.1 <- matrix(0, nrow = length(Corrimientos), ncol = 2)
 for (i in 1:2){
-    ARL[,i] = sapply(Corrimientos, function(x) 
+    ARL1.1[,i] = sapply(Corrimientos, function(x) 
     CUSUM_ARL(k = k[i], h = params_05[[i]], Corrimiento = x, m = 20000)$ARL)
 }
 
@@ -108,3 +147,77 @@ Tabla = ARL[as.character(seq(0,2,0.05)), ];Tabla
 Tabla = data.frame(Tabla)
 xtable(Tabla, caption = "ARL para detectar un cambio de k-sigma", 
        label = "tab:ARL", digits = 2)
+
+## Ahora probemos para un ARL de  370 
+
+params_06 = lapply(k, function(k) EscogerKH(ARL_deseado = 370, k = k, h_max = 10)$h)
+
+Corrimientos = seq(0, 2, 0.05)
+ARL2.1 <- matrix(0, nrow = length(Corrimientos), ncol = 2)
+for (i in 1:2){
+    ARL2.1[,i] = sapply(Corrimientos, function(x) 
+    CUSUM_ARL(k = k[i], h = params_06[[i]], Corrimiento = x, m = 20000)$ARL)
+}
+
+
+par(mar = c(5.1, 5.1, 4.1, 2.1), bg = 'white')
+plot(Corrimientos, ARL[,1], type = "l", col = "red", xlim = c(0, 1), ylab = "ARL", 
+     xlab = "Corrimientos en\nmúltiplos de σ", main = "ARL PARA CARTA CUSUM", cex.lab = 0.8,
+     lwd = 1, font.main = 2, cex.axis = 0.8, cex.main = 1, col.main = 'black', family = 'sans',
+     bty = 'L', fg = 'black', col.axis = 'black',col.lab = 'black', font.axis = 1, font.lab = 2)
+lines(Corrimientos, ARL[,2], col = "orange")
+abline(h = seq(0, 400, 40), col = 'grey75', lty = 'dotted')
+abline(v = seq(0, 1, 0.1), col = 'grey75', lty = 'dotted')
+legend("topright", title = 'Corrimiento', legend = c("0.25σ", "0.5σ"), text.font = 1,
+       col = c("red", "orange"), lty = 1, title.font = 2)
+
+# Grafica en escala log
+
+par(mar = c(5.1, 5.1, 4.1, 2.1), bg = 'white')
+
+plot(Corrimientos, ARL[,1], type = "l", col = "red", xlim = c(0, 1), ylab = "ARL", 
+     xlab = "Corrimientos en\nmúltiplos de σ", main = "ARL PARA CARTA CUSUM", cex.lab = 0.8,
+     lwd = 1, font.main = 2, cex.axis = 0.8, cex.main = 1, col.main = 'black', family = 'sans',
+     bty = 'L', fg = 'black', col.axis = 'black',col.lab = 'black', font.axis = 1, font.lab = 2, log = "y")
+lines(Corrimientos, ARL[,2], col = "orange")
+#abline(h = seq(0, 150, 10), col = 'grey75', lty = 'dotted')
+abline(v = seq(0, 1, 0.1), col = 'grey75', lty = 'dotted')
+legend("topright", title = 'Corrimiento', legend = c("0.25σ", "0.5σ"), text.font = 1,
+       col = c("red", "orange"), lty = 1, title.font = 2)
+
+#Ahora para corrimientos negativos
+
+Corrimientos = seq(-1, 0, 0.05)
+ARL1.2 <- matrix(0, nrow = length(Corrimientos), ncol = 2)
+
+for (i in 1:2){
+    ARL1.2[,i] = sapply(Corrimientos, function(x) 
+    CUSUM_ARL(k = k[i], h = params_05[[i]], Corrimiento = x, m = 20000)$ARL)
+}
+
+# Tablas para los ARL's de todas las simulaciones
+
+Corrimientos = seq(0, 2, 0.05)
+colnames(ARL1.1) = c("k = 0.25", "k = 0.5")
+rownames(ARL1.1) = round(Corrimientos, 4)
+Tabla1 = ARL1.1[as.character(seq(0,1,0.05)), ];Tabla1
+Tabla1 = data.frame(Tabla1)
+
+Corrimientos = seq(-1, 0, 0.05)
+colnames(ARL1.2) = c("k = 0.25", "k = 0.5")
+rownames(ARL1.2) = Corrimientos
+Tabla2 = ARL1.2[as.character(seq(-1,0,0.05)), ];Tabla2
+Tabla2 = data.frame(Tabla2)
+
+Corrimientos = seq(0, 2, 0.05)
+colnames(ARL2.1) = c("k = 0.25", "k = 0.5")
+rownames(ARL2.1) = round(Corrimientos, 4)
+Tabla3 = ARL2.1[as.character(seq(0,1,0.05)), ];Tabla3
+Tabla3 = data.frame(Tabla3) 
+
+print("Buscando un ARL de 200 con Corrimientos Positivos: \n");Tabla1[1:6,]
+print("Buscando un ARL de 200 con Corrimientos Negativos: \n");Tabla2[16:21,]
+print("Buscando un ARL de 370 con Corrimientos Positivos: \n");Tabla3[1:6,]
+
+
+
