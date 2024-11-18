@@ -109,24 +109,23 @@ params_05 = lapply(k, function(k) EscogerKH(ARL_deseado = 200, k = k)$h)
 
 # Evaluar el comportamiento del ARL
 Corrimientos = seq(0, 2, 0.05)
-
 ARL1.1 <- matrix(0, nrow = length(Corrimientos), ncol = 2)
+
 for (i in 1:2){
     ARL1.1[,i] = sapply(Corrimientos, function(x) 
     CUSUM_ARL(k = k[i], h = params_05[[i]], Corrimiento = x, m = 20000)$ARL)
 }
 
 par(mar = c(5.1, 5.1, 4.1, 2.1), bg = 'white')
-plot(Corrimientos, ARL[,1], type = "l", col = "red", xlim = c(0, 1), ylab = "ARL", 
+plot(Corrimientos, ARL1.1[,1], type = "l", col = "red", xlim = c(0, 1), ylab = "ARL", 
      xlab = "Corrimientos en\nmúltiplos de σ", main = "ARL PARA CARTA CUSUM", cex.lab = 0.8,
      lwd = 1, font.main = 2, cex.axis = 0.8, cex.main = 1, col.main = 'black', family = 'sans',
      bty = 'L', fg = 'black', col.axis = 'black',col.lab = 'black', font.axis = 1, font.lab = 2)
-lines(Corrimientos, ARL[,2], col = "orange")
+lines(Corrimientos, ARL1.1[,2], col = "orange")
 abline(h = seq(0, 220, 25), col = 'grey75', lty = 'dotted')
 abline(v = seq(0, 1, 0.1), col = 'grey75', lty = 'dotted')
 legend("topright", title = 'Corrimiento', legend = c("0.25σ", "0.5σ"), text.font = 1,
        col = c("red", "orange"), lty = 1, title.font = 2)
-
 
 
 #Tabla de parámetros óptimos
@@ -141,9 +140,9 @@ xtable(params_05, caption = "Parámetros óptimos para detectar un cambio de k-s
 
 # Tabla de ARL
 
-colnames(ARL) = c("k = 0.25", "k = 0.5")
-rownames(ARL) = Corrimientos
-Tabla = ARL[as.character(seq(0,2,0.05)), ];Tabla
+colnames(ARL1.1) = c("k = 0.25", "k = 0.5")
+rownames(ARL1.1) = Corrimientos
+Tabla = ARL1.1[as.character(seq(0,2,0.05)), ];Tabla
 Tabla = data.frame(Tabla)
 xtable(Tabla, caption = "ARL para detectar un cambio de k-sigma", 
        label = "tab:ARL", digits = 2)
@@ -161,39 +160,39 @@ for (i in 1:2){
 
 
 par(mar = c(5.1, 5.1, 4.1, 2.1), bg = 'white')
-plot(Corrimientos, ARL[,1], type = "l", col = "red", xlim = c(0, 1), ylab = "ARL", 
+plot(Corrimientos, ARL2.1[,1], type = "l", col = "red", xlim = c(0, 1), ylab = "ARL", 
      xlab = "Corrimientos en\nmúltiplos de σ", main = "ARL PARA CARTA CUSUM", cex.lab = 0.8,
      lwd = 1, font.main = 2, cex.axis = 0.8, cex.main = 1, col.main = 'black', family = 'sans',
      bty = 'L', fg = 'black', col.axis = 'black',col.lab = 'black', font.axis = 1, font.lab = 2)
-lines(Corrimientos, ARL[,2], col = "orange")
+lines(Corrimientos, ARL2.1[,2], col = "orange")
 abline(h = seq(0, 400, 40), col = 'grey75', lty = 'dotted')
 abline(v = seq(0, 1, 0.1), col = 'grey75', lty = 'dotted')
 legend("topright", title = 'Corrimiento', legend = c("0.25σ", "0.5σ"), text.font = 1,
        col = c("red", "orange"), lty = 1, title.font = 2)
 
-# Grafica en escala log
-
-par(mar = c(5.1, 5.1, 4.1, 2.1), bg = 'white')
-
-plot(Corrimientos, ARL[,1], type = "l", col = "red", xlim = c(0, 1), ylab = "ARL", 
-     xlab = "Corrimientos en\nmúltiplos de σ", main = "ARL PARA CARTA CUSUM", cex.lab = 0.8,
-     lwd = 1, font.main = 2, cex.axis = 0.8, cex.main = 1, col.main = 'black', family = 'sans',
-     bty = 'L', fg = 'black', col.axis = 'black',col.lab = 'black', font.axis = 1, font.lab = 2, log = "y")
-lines(Corrimientos, ARL[,2], col = "orange")
-#abline(h = seq(0, 150, 10), col = 'grey75', lty = 'dotted')
-abline(v = seq(0, 1, 0.1), col = 'grey75', lty = 'dotted')
-legend("topright", title = 'Corrimiento', legend = c("0.25σ", "0.5σ"), text.font = 1,
-       col = c("red", "orange"), lty = 1, title.font = 2)
 
 #Ahora para corrimientos negativos
 
-Corrimientos = seq(-1, 0, 0.05)
+Corrimientos = seq(-2, 0, 0.05)
 ARL1.2 <- matrix(0, nrow = length(Corrimientos), ncol = 2)
 
 for (i in 1:2){
     ARL1.2[,i] = sapply(Corrimientos, function(x) 
     CUSUM_ARL(k = k[i], h = params_05[[i]], Corrimiento = x, m = 20000)$ARL)
 }
+
+par(mar = c(5.1, 5.1, 4.1, 2.1), bg = 'white')
+
+plot(Corrimientos, ARL1.2[,1], type = "l", col = "red", xlim = c(0, 1), ylab = "ARL", 
+     xlab = "Corrimientos en\nmúltiplos de σ", main = "ARL PARA CARTA CUSUM", cex.lab = 0.8,
+     lwd = 1, font.main = 2, cex.axis = 0.8, cex.main = 1, col.main = 'black', family = 'sans',
+     bty = 'L', fg = 'black', col.axis = 'black',col.lab = 'black', font.axis = 1, font.lab = 2)
+lines(Corrimientos, ARL1.2[,2], col = "orange")
+abline(h = seq(0, 150, 10), col = 'grey75', lty = 'dotted')
+abline(v = seq(0, 1, 0.1), col = 'grey75', lty = 'dotted')
+legend("topright", title = 'Corrimiento', legend = c("0.25σ", "0.5σ"), text.font = 1,
+       col = c("red", "orange"), lty = 1, title.font = 2)
+
 
 # Tablas para los ARL's de todas las simulaciones
 
